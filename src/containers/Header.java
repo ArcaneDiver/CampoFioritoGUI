@@ -1,6 +1,6 @@
 package containers;
 
-import componets.FlagCounter;
+import components.FlagCounter;
 import interfaces.Callback;
 
 
@@ -18,18 +18,23 @@ public class Header extends JPanel {
     private Callback callback;
     private Point clickLocation;
 
+    public FlagCounter fCounter;
+
     public Header(int maxWidth, int maxHeight, int sideSize, Callback callback) {
 
         this.callback = callback;
 
-        setLayout(new FlowLayout(FlowLayout.LEFT));
+        setLayout(new FlowLayout(FlowLayout.CENTER));
 
         setBorder(BorderFactory.createEmptyBorder());
+
         setPreferredSize(new Dimension(maxWidth, maxHeight));
         setMaximumSize(new Dimension(maxWidth, maxHeight));
         setMinimumSize(new Dimension(maxWidth, maxHeight));
 
-        add(new FlagCounter(), FlowLayout.LEFT);
+        fCounter = new FlagCounter();
+
+        add(fCounter, FlowLayout.LEFT);
         setBackground(HEADER_BACKGROUND);
 
         addMouseListener(mouseListener);

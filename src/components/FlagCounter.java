@@ -1,4 +1,4 @@
-package componets;
+package components;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,21 +7,30 @@ public class FlagCounter extends JLabel {
 
     private final ImageIcon flagIcon = new ImageIcon( this.getClass().getResource("../res/flag.png") );;
 
+    private int numberOfFlags = 0;
     public FlagCounter() {
         setIcon(flagIcon);
 
-        setText(" Number of flags: ");
+        setText(" 0");
 
         setForeground(Color.WHITE);
 
-        setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
+        setFont(new Font(Font.SANS_SERIF, Font.BOLD, 30));
+
+
     }
 
-    public void changeNumberOfFlags(int number) {
+    public void setNumberOfFlags(int number) {
         setIcon(null);
         setText(null);
 
         setIcon(flagIcon);
-        setText(" Number of flags: " + number);
+        setText(" " + number);
+
+        numberOfFlags = number;
+    }
+
+    public int getNumberOfFlags() {
+        return numberOfFlags;
     }
 }

@@ -1,8 +1,9 @@
 package main;
 
-import componets.Button;
+import components.Button;
 
-import componets.FlagCounter;
+import components.FlagCounter;
+import containers.ExitContainer;
 import containers.Header;
 import containers.Content;
 import interfaces.Callback;
@@ -11,14 +12,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
 
 public class CampoFiorito extends AbstractCampoFiorito {
 
 
-    private JPanel container = new JPanel();
-    private JPanel header;
-    private JPanel content = new JPanel();
+    private JLayeredPane container = new JLayeredPane();
+    private Header header;
+    private Content content;
+    private ExitContainer exit;
 
     private Button[][] buttons = new Button[size][size];
 
@@ -32,17 +33,23 @@ public class CampoFiorito extends AbstractCampoFiorito {
         setSize(MAX_WINDOW_SIZE, MAX_WINDOW_SIZE);
 
         setUndecorated(true);
+
         setBounds(20, 20, MAX_WINDOW_SIZE, MAX_WINDOW_SIZE);
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+        setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+
+        //container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 
         header = new Header(MAX_WINDOW_SIZE, HEADER_HEIGHT, size, new Callback() {
             @Override
             public void moveScreen(Point locationInTheScreen, Point locationInTheFrame) {
                 setBounds(locationInTheScreen.x - locationInTheFrame.x, locationInTheScreen.y - locationInTheFrame.y, MAX_WINDOW_SIZE, MAX_WINDOW_SIZE);
             }
+
+            @Override
+            public void exitFromFrame() {}
         });
 
         content = new Content(MAX_WINDOW_SIZE, CONTENT_HEIGHT, size);
@@ -60,11 +67,28 @@ public class CampoFiorito extends AbstractCampoFiorito {
             }
         }
 
-        container.add(header);
-        container.add(content);
+        exit = new ExitContainer(MAX_WINDOW_SIZE, new Callback() {
+            @Override
+            public void moveScreen(Point locationInTheScreen, Point locationInTheFrame) {
+
+            }
+
+            @Override
+            public void exitFromFrame() {
+                dispose();
+            }
+        });
+
+        container.add(header, 2);
+        container.add(content, 1);
+        container.add(exit, 0);
+
+        /*container.setLayer(header, 0);
+        container.setLayer(content, 1);
+        container.setLayer(exit, 2);*/
+
 
         add(container);
-
         setVisible(true);
     }
 
@@ -78,8 +102,9 @@ public class CampoFiorito extends AbstractCampoFiorito {
 
             if(SwingUtilities.isRightMouseButton(e)) {
 
-                final FlagCounter fCounter = (FlagCounter) header.getComponents()[0];
+                final FlagCounter fCounter = header.fCounter;
 
+                fCounter.setNumberOfFlags(!btClicked.isFlagged() ? fCounter.getNumberOfFlags() + 1 : fCounter.getNumberOfFlags() - 1);
 
                 btClicked.setFlag( !btClicked.isFlagged() );
 

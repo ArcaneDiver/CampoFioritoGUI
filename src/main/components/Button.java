@@ -6,7 +6,7 @@ import java.awt.*;
 public class Button extends JButton {
 
     public static Color emptyColor = new Color(138, 138, 138);
-    public static Color bombColor = new Color(138, 24, 21);
+    public static Color bombColor = new Color(255, 0, 21);
 
     private final Color evenColor =  new Color(170, 215, 81);
     private final Color oddColor = new Color(162, 209, 73);
@@ -52,7 +52,6 @@ public class Button extends JButton {
         System.out.println(status + " " + bombColor.toString());
         if(status == 0) setBackground(emptyColor);
         else setBackground(bombColor);
-        repaint();
 
         return status;
     }

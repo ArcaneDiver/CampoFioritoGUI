@@ -47,7 +47,6 @@ public class CampoFiorito extends AbstractCampoFiorito {
 
         //container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 
-        container.setOpaque(true);
 
         header = new Header(MAX_WINDOW_SIZE, HEADER_HEIGHT, size, new Callback() {
             @Override
@@ -88,19 +87,24 @@ public class CampoFiorito extends AbstractCampoFiorito {
         dialog = new DialogContainer(MAX_WINDOW_SIZE);
 
 
-        container.add(header);
-        container.add(content);
-        container.add(exit);
-        container.add(dialog);
 
+        container.add(header, JLayeredPane.DEFAULT_LAYER);
+        container.add(content, JLayeredPane.DEFAULT_LAYER);
+        container.add(exit, JLayeredPane.MODAL_LAYER);
+        container.add(dialog, JLayeredPane.MODAL_LAYER);
+
+
+/*
         container.setLayer(header, 0);
         container.setLayer(content, 0);
         container.setLayer(exit, 2);
         container.setLayer(dialog, 5);
-
+*/
 
         add(container);
         setVisible(true);
+
+
     }
 
     private MouseAdapter mouseListenerContent = new MouseAdapter () {
@@ -137,6 +141,7 @@ public class CampoFiorito extends AbstractCampoFiorito {
 
                         setButtonsStatus(false);
                         setDialogOpened(true);
+
 
                     }
                 }
@@ -250,6 +255,7 @@ public class CampoFiorito extends AbstractCampoFiorito {
 
     private void setDialogOpened(boolean looseOrWin) {
         dialog.setDialog(true, looseOrWin);
+
         dialogOpened = looseOrWin;
     }
 

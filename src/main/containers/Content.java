@@ -13,7 +13,6 @@ public class Content extends JPanel {
 
         setBounds(0, maxWidth - maxHeight, maxWidth, maxHeight);
 
-
     }
 
 }

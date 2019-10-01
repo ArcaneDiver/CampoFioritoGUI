@@ -37,6 +37,8 @@ public class Header extends JPanel {
 
         addMouseListener(mouseListener);
 
+
+
         sw.execute();
     }
 

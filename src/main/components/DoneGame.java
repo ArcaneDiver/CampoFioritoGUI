@@ -11,5 +11,11 @@ public class DoneGame extends JLabel {
         setFont( new Font(Font.SANS_SERIF, Font.BOLD, 30) );
 
         setForeground(new Color(255, 255, 255));
+
     }
+/*
+    public void paintComponent(Graphics g) {
+        System.out.println("Reprint||!!");
+        super.paintComponent(g);
+    }*/
 }

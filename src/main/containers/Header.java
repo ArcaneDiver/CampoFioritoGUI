@@ -1,7 +1,7 @@
-package containers;
+package main.containers;
 
-import components.FlagCounter;
-import interfaces.Callback;
+import main.components.FlagCounter;
+import main.interfaces.Callback;
 
 
 import javax.swing.*;
@@ -28,10 +28,8 @@ public class Header extends JPanel {
 
         setBorder(BorderFactory.createEmptyBorder());
 
-        setPreferredSize(new Dimension(maxWidth, maxHeight));
-        setMaximumSize(new Dimension(maxWidth, maxHeight));
-        setMinimumSize(new Dimension(maxWidth, maxHeight));
 
+        setBounds(0, 0, maxWidth, maxHeight);
         fCounter = new FlagCounter();
 
         add(fCounter, FlowLayout.LEFT);

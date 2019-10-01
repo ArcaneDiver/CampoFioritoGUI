@@ -1,9 +1,12 @@
-package components;
+package main.components;
 
 import javax.swing.*;
 import java.awt.*;
 
 public class Button extends JButton {
+
+    public static Color emptyColor = new Color(138, 138, 138);
+    public static Color bombColor = new Color(138, 24, 21);
 
     private final Color evenColor =  new Color(170, 215, 81);
     private final Color oddColor = new Color(162, 209, 73);
@@ -19,17 +22,19 @@ public class Button extends JButton {
 
     private boolean checked;
 
+    private boolean isDisabled = false;
+
     public Button(boolean even){
 
 
-        status = ( Math.random() * 100) < 90 ? (byte) 0 : (byte) 1;
+        status = ( Math.random() * 100) < 2 ? (byte) 0 : (byte) 1;
 
         checked = false;
 
         flagIcon = new ImageIcon( new ImageIcon( this.getClass().getResource("../res/flag.png") ).getImage().getScaledInstance( ButtonSize, ButtonSize, Image.SCALE_SMOOTH ) );
 
         setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 30));
-        setMargin(new Insets(1, 1, 1, 1));
+        setMargin(new Insets(0, 0, 0, 0));
         setBorder(BorderFactory.createEmptyBorder());
 
 
@@ -39,11 +44,27 @@ public class Button extends JButton {
 
     }
 
-    public void showItsRealNature() {
-        if(status == 0) setBackground(new Color(138, 138, 138));
-        else setBackground(new Color(255, 0, 0));
+    public int showItsRealNature() {
+
+        setIcon(null);
+        setText(null);
+
+        System.out.println(status + " " + bombColor.toString());
+        if(status == 0) setBackground(emptyColor);
+        else setBackground(bombColor);
+        repaint();
+
+        return status;
     }
 
+
+    public void setSafeText(String text) {
+        setText(null);
+        setIcon(null);
+
+        setBackground(emptyColor);
+        setText(text);
+    }
     public byte getStatus() {
         return status;
     }
@@ -75,6 +96,11 @@ public class Button extends JButton {
 
     public Color getColor() {
         return even ? evenColor : oddColor;
+    }
+
+    public void setDisabled(boolean toSet) {
+        isDisabled = !toSet;
+        setEnabled(toSet);
     }
 
 }

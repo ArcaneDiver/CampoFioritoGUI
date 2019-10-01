@@ -1,4 +1,4 @@
-package components;
+package main.components;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +16,6 @@ public class FlagCounter extends JLabel {
         setForeground(Color.WHITE);
 
         setFont(new Font(Font.SANS_SERIF, Font.BOLD, 30));
-
 
     }
 

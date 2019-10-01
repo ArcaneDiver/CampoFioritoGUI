@@ -1,6 +1,6 @@
-package components;
+package main.components;
 
-import interfaces.Callback;
+import main.interfaces.Callback;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,29 +13,23 @@ public class ExitButton extends JButton {
 
     Callback cb;
 
-    public ExitButton(Callback cb, int s) {
+    public ExitButton(Callback cb, int s, int windowSize) {
 
         icon = new ImageIcon( new ImageIcon( this.getClass().getResource("../res/XIcon.png") ).getImage().getScaledInstance( s, s, Image.SCALE_SMOOTH ) );
 
         this.cb = cb;
 
         setIcon(icon);
+
         addMouseListener(mouseListener);
 
-        Dimension d = new Dimension(s, s);
-
-        setSize(d);
-        setPreferredSize(d);
-        setMaximumSize(d);
-        setMinimumSize(d);
-
-        setMargin( new Insets(1, 1, 1, 1));
+        setMargin( new Insets(0, 0, 0, 0));
 
         setBackground(new Color(74, 117, 44));
         setBorder(BorderFactory.createEmptyBorder());
 
         setOpaque(true);
-        //setBounds(1000 - s, 0, s, s);
+        setBounds(windowSize - s, 0, s, s);
 
         setSize(s, s);
     }

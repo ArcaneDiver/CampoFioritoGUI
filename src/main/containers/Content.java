@@ -1,4 +1,4 @@
-package containers;
+package main.containers;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,9 +9,11 @@ public class Content extends JPanel {
         setLayout(new GridLayout(sideSize, sideSize, 0, 0));
 
         setBorder(BorderFactory.createEmptyBorder());
-        setPreferredSize(new Dimension(maxWidth, maxHeight));
-        setMaximumSize(new Dimension(maxWidth, maxHeight));
-        setMinimumSize(new Dimension(maxWidth, maxHeight));
+
+
+        setBounds(0, maxWidth - maxHeight, maxWidth, maxHeight);
+
+
     }
 
 }

@@ -1,12 +1,13 @@
 package main;
 
-import components.Button;
+import main.components.Button;
 
-import components.FlagCounter;
-import containers.ExitContainer;
-import containers.Header;
-import containers.Content;
-import interfaces.Callback;
+import main.components.ExitButton;
+import main.components.FlagCounter;
+import main.containers.Header;
+import main.containers.Content;
+import main.containers.DialogContainer;
+import main.interfaces.Callback;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,9 +20,12 @@ public class CampoFiorito extends AbstractCampoFiorito {
     private JLayeredPane container = new JLayeredPane();
     private Header header;
     private Content content;
-    private ExitContainer exit;
+    private ExitButton exit;
+    private DialogContainer dialog;
 
     private Button[][] buttons = new Button[size][size];
+
+    private boolean dialogOpened = false;
 
     public static void main(String[] args) {
         new CampoFiorito();
@@ -35,12 +39,15 @@ public class CampoFiorito extends AbstractCampoFiorito {
         setUndecorated(true);
 
         setBounds(20, 20, MAX_WINDOW_SIZE, MAX_WINDOW_SIZE);
+
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-        setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
 
         //container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
+
+        container.setOpaque(true);
 
         header = new Header(MAX_WINDOW_SIZE, HEADER_HEIGHT, size, new Callback() {
             @Override
@@ -67,25 +74,29 @@ public class CampoFiorito extends AbstractCampoFiorito {
             }
         }
 
-        exit = new ExitContainer(MAX_WINDOW_SIZE, new Callback() {
+        exit = new ExitButton(new Callback() {
             @Override
-            public void moveScreen(Point locationInTheScreen, Point locationInTheFrame) {
-
-            }
+            public void moveScreen(Point locationInTheScreen, Point locationInTheFrame) {  }
 
             @Override
             public void exitFromFrame() {
                 dispose();
             }
-        });
 
-        container.add(header, 2);
-        container.add(content, 1);
-        container.add(exit, 0);
+        }, 40, MAX_WINDOW_SIZE);
 
-        /*container.setLayer(header, 0);
-        container.setLayer(content, 1);
-        container.setLayer(exit, 2);*/
+        dialog = new DialogContainer(MAX_WINDOW_SIZE);
+
+
+        container.add(header);
+        container.add(content);
+        container.add(exit);
+        container.add(dialog);
+
+        container.setLayer(header, 0);
+        container.setLayer(content, 0);
+        container.setLayer(exit, 2);
+        container.setLayer(dialog, 5);
 
 
         add(container);
@@ -97,6 +108,9 @@ public class CampoFiorito extends AbstractCampoFiorito {
         private Color lastBackground;
 
         public void mouseClicked (MouseEvent e) {
+
+            if(dialogOpened) return;
+
             Button btClicked = (Button) e.getSource();
 
 
@@ -109,17 +123,31 @@ public class CampoFiorito extends AbstractCampoFiorito {
                 btClicked.setFlag( !btClicked.isFlagged() );
 
             } else if ( !btClicked.isFlagged() ){
+
                 if (btClicked.getStatus() == 0) {
+
                     recursiveExpansion(btClicked);
                     cleanCheckedButtons();
+
                 } else {
-                    btClicked.showItsRealNature();
+
+                    int status = btClicked.showItsRealNature();
+
+                    if(status == 1) {
+
+                        setButtonsStatus(false);
+                        setDialogOpened(true);
+
+                    }
                 }
             }
 
         }
 
         public void mouseEntered(MouseEvent e) {
+
+            if(dialogOpened) return;
+
             Button btClicked = (Button) e.getSource();
 
             lastBackground = btClicked.getBackground();
@@ -128,6 +156,8 @@ public class CampoFiorito extends AbstractCampoFiorito {
         }
 
         public void mouseExited (MouseEvent e) {
+            if(dialogOpened) return;
+
             Button btClicked = (Button) e.getSource();
             if( lastBackground.brighter().getRGB() == btClicked.getBackground().getRGB() ) btClicked.setBackground(lastBackground);
         }
@@ -171,13 +201,14 @@ public class CampoFiorito extends AbstractCampoFiorito {
     /**
                 Le O sono le celle dove esegui l`espansione
 
-                | - | - | - |
-                | * | O | * |
-                | - | - | - |
-                | O | * | O |
-                | - | - | - |
-                | * | O | * |
-                | - | - | - |
+                |  -  |  -  |  -  |
+                |  *  |  O  |  *  |
+                |  -  |  -  |  -  |
+                |  O  |  *  |  O  |
+                |  -  |  -  |  -  |
+                |  *  |  O  |  *  |
+                |  -  |  -  |  -  |
+
      **/
     private void recursiveExpansion(Button bt) {
         Integer number = getNumberOfNearBombs(bt);
@@ -203,7 +234,7 @@ public class CampoFiorito extends AbstractCampoFiorito {
             }
 
         } else {
-            bt.setText(number.toString());
+            bt.setSafeText(number.toString());
         }
 
 
@@ -215,5 +246,16 @@ public class CampoFiorito extends AbstractCampoFiorito {
                 buttons[i][k].setChecked(false);
             }
         }
+    }
+
+    private void setDialogOpened(boolean looseOrWin) {
+        dialog.setDialog(true, looseOrWin);
+        dialogOpened = looseOrWin;
+    }
+
+    private void setButtonsStatus(boolean status) {
+        for(Button[] arr : buttons)
+            for(Button e : arr)
+                e.setDisabled(status);
     }
 }

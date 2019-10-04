@@ -3,6 +3,7 @@ package main.components;
 import javax.swing.*;
 import java.awt.*;
 
+
 public class Button extends JButton {
 
     public static Color emptyColor = new Color(138, 138, 138);
@@ -26,18 +27,24 @@ public class Button extends JButton {
 
     public Button(boolean even){
 
+        
+        
 
-        status = ( Math.random() * 100) < 2 ? (byte) 0 : (byte) 1;
+        status = (Math.random() * 100) < 90 ? (byte) 0 : (byte) 1;
 
+        
         checked = false;
 
-        flagIcon = new ImageIcon( new ImageIcon( this.getClass().getResource("../res/flag.png") ).getImage().getScaledInstance( ButtonSize, ButtonSize, Image.SCALE_SMOOTH ) );
+        flagIcon = new ImageIcon(new ImageIcon(this.getClass().getResource("../res/flag.png")).getImage()
+                .getScaledInstance(ButtonSize, ButtonSize, Image.SCALE_SMOOTH));
 
+        
         setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 30));
         setMargin(new Insets(0, 0, 0, 0));
         setBorder(BorderFactory.createEmptyBorder());
 
-
+        
+        
         this.even = even;
         setBackground(even ? evenColor : oddColor);
 
@@ -49,7 +56,6 @@ public class Button extends JButton {
         setIcon(null);
         setText(null);
 
-        System.out.println(status + " " + bombColor.toString());
         if(status == 0) setBackground(emptyColor);
         else setBackground(bombColor);
 
@@ -103,3 +109,4 @@ public class Button extends JButton {
     }
 
 }
+

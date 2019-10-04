@@ -27,12 +27,12 @@ public class DialogContainer extends JPanel {
         add(label);
     }
 
-    public void setDialog(boolean isOpen, boolean looseOrWin) {
+    public void setDialog(boolean isOpen, boolean isLoosed) {
         setVisible(isOpen);
 
         System.out.println("Called");
         label.setText(null);
-        label.setText(looseOrWin ? "Hai perso" : "Hai perso");
+        label.setText(isLoosed ? "Hai perso" : "Hai perso");
         label.setBackground(new Color(1, 255 ,1));
     }
 

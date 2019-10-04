@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class FlagCounter extends JLabel {
 
-    private final ImageIcon flagIcon = new ImageIcon( this.getClass().getResource("../res/flag.png") );;
+    private final ImageIcon flagIcon = new ImageIcon( this.getClass().getResource("../res/flag.png") );
 
     private int numberOfFlags = 0;
     public FlagCounter() {

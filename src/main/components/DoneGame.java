@@ -13,9 +13,5 @@ public class DoneGame extends JLabel {
         setForeground(new Color(255, 255, 255));
 
     }
-/*
-    public void paintComponent(Graphics g) {
-        System.out.println("Reprint||!!");
-        super.paintComponent(g);
-    }*/
+
 }

@@ -1,0 +1,11 @@
+{
+        "configurations": [
+                {
+                        "type": "java",
+                        "name": "CodeLens (Launch) - CampoFiorito",
+                        "request": "launch",
+                        "mainClass": "main.CampoFiorito",
+                        "projectName": "CampoFiorito_b10d8e92"
+                }
+        ]
+}

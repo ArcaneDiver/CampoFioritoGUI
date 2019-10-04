@@ -32,7 +32,8 @@ public class Header extends JPanel {
         setBounds(0, 0, maxWidth, maxHeight);
         fCounter = new FlagCounter();
 
-        add(fCounter, FlowLayout.LEFT);
+        add(fCounter);
+        
         setBackground(HEADER_BACKGROUND);
 
         addMouseListener(mouseListener);

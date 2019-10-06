@@ -38,8 +38,6 @@ public class CampoFiorito extends AbstractCampoFiorito {
     public CampoFiorito() {
         super("Campo fiorito");
 
-        setSize(MAX_WINDOW_SIZE, MAX_WINDOW_SIZE);
-
         setUndecorated(true);
 
         setBounds(20, 20, MAX_WINDOW_SIZE, MAX_WINDOW_SIZE);

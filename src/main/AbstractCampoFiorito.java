@@ -2,6 +2,7 @@ package main;
 
 import javax.swing.*;
 
+
 abstract class AbstractCampoFiorito extends JFrame{
     public final int size = 25;
     public final int numberOfButton = size * size;

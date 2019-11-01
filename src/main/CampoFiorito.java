@@ -1,25 +1,19 @@
 package main;
 
-import main.components.Button;
 
-import main.components.ExitButton;
-import main.components.FlagCounter;
-import main.containers.Header;
-import main.containers.Content;
-import main.containers.DialogContainer;
+import main.components.*;
+import main.components.Button;
+import main.containers.*;
 import main.interfaces.Callback;
 
 import javax.swing.*;
 
-
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.util.ArrayList;
 
 public class CampoFiorito extends AbstractCampoFiorito {
 
-
-   
     private JLayeredPane container = new JLayeredPane();
     private Header header;
     private Content content;
@@ -28,15 +22,19 @@ public class CampoFiorito extends AbstractCampoFiorito {
 
     private Button[][] buttons = new Button[size][size];
 
-    private boolean dialogOpened = false;
+    private boolean boardGenerated;
+    private boolean dialogOpened;
+
+    private AudioController audioController;
 
     public static void main(String[] args) {
-        new CampoFiorito();
-        
+        SwingUtilities.invokeLater(CampoFiorito::new);
     }
 
     public CampoFiorito() {
         super("Campo fiorito");
+
+        audioController = new AudioController();
 
         setUndecorated(true);
 
@@ -47,7 +45,6 @@ public class CampoFiorito extends AbstractCampoFiorito {
 
         setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
 
-        //container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
 
         header = new Header(MAX_WINDOW_SIZE, HEADER_HEIGHT, size, new Callback() {
 
@@ -64,17 +61,9 @@ public class CampoFiorito extends AbstractCampoFiorito {
 
         content = new Content(MAX_WINDOW_SIZE, CONTENT_HEIGHT, size);
 
-        for (int i = 0; i < size; i++) {
-            for (int k = 0; k < size; k++) {
 
-                boolean even = ((k + 1) % 2 == 0 && (i % 2 == 0)) || ((k + 1) % 2 != 0 && (i % 2 != 0));
+        startNewGame();
 
-                buttons[i][k] = new Button(even);
-                buttons[i][k].addMouseListener(mouseListenerContent);
-
-                content.add(buttons[i][k]);
-            }
-        }
 
         exit = new ExitButton(new Callback() {
             @Override
@@ -98,10 +87,33 @@ public class CampoFiorito extends AbstractCampoFiorito {
         add(container);
         setVisible(true);
 
-        
     }
 
-  
+
+    private void startNewGame() {
+        for (int i = 0; i < size; i++) {
+            for (int k = 0; k < size; k++) {
+
+                if (buttons[i][k] != null) content.remove(buttons[i][k]);
+
+                Clock clock = header.getClock();
+                clock.stopClock();
+                clock.startClock();
+
+
+                boolean even = ((k + 1) % 2 == 0 && (i % 2 == 0)) || ((k + 1) % 2 != 0 && (i % 2 != 0));
+
+                buttons[i][k] = new Button(even);
+                buttons[i][k].addMouseListener(mouseListenerContent);
+
+                dialogOpened = false;
+                boardGenerated = false;
+
+                content.add(buttons[i][k]);
+
+            }
+        }
+    }
 
     private MouseAdapter mouseListenerContent = new MouseAdapter () {
 
@@ -116,7 +128,7 @@ public class CampoFiorito extends AbstractCampoFiorito {
 
             if(SwingUtilities.isRightMouseButton(e)) {
 
-                final FlagCounter fCounter = header.fCounter;
+                FlagCounter fCounter = header.getFCounter();
 
                 fCounter.setNumberOfFlags(!btClicked.isFlagged() ? fCounter.getNumberOfFlags() + 1 : fCounter.getNumberOfFlags() - 1);
 
@@ -125,20 +137,21 @@ public class CampoFiorito extends AbstractCampoFiorito {
             } else if ( !btClicked.isFlagged() ){
 
                 if (btClicked.getStatus() == 0) {
+                    if(!boardGenerated) {
+                        generateBoard(indexOf2D(btClicked));
+                        //openBoard();
+                    }
+
+                    audioController.play("empty");
 
                     recursiveExpansion(btClicked, true);
                     cleanCheckedButtons();
 
+
                 } else {
-
-                    int status = btClicked.showItsRealNature();
-
-                    if(status == 1) {
-
-                        setButtonsStatus(false);
-                        setDialogOpened(true);
-
-                    }
+                    audioController.play("bomb");
+                    btClicked.showItsRealNature();
+                    loose();
                 }
             }
 
@@ -165,7 +178,63 @@ public class CampoFiorito extends AbstractCampoFiorito {
 
     };
 
+    private void generateBoard(int[] index) {
 
+        recGenBoardWhereClick(index, (int) (Math.random() * 10 + 5));
+        fillTheRestOfTheBoard();
+        cleanCheckedButtons();
+        boardGenerated = true;
+    }
+
+    private void recGenBoardWhereClick(int[] index, int remaining) {
+        if(remaining == 0) return;
+
+        Button bt = buttons[index[0]][index[1]];
+        bt.setStatus((byte) 0);
+
+        if(Math.random() * 100 < 20 && remaining < 3) return;
+
+        ArrayList<Button> listNeighbors = getNeighbors(index);
+
+        for (Button neighbor : listNeighbors) {
+            neighbor.setChecked(true);
+            //bt.setStatus((byte) 0);
+            recGenBoardWhereClick(indexOf2D(neighbor), remaining - 1);
+        }
+    }
+
+    private void fillTheRestOfTheBoard() {
+        for(int i = 0; i < size; i++) {
+            for(int j = 0; j < size; j++) {
+                if(!buttons[i][j].getChecked()) {
+                    byte status = Math.random() * 100 < 20 ? (byte) 1 : (byte) 0;
+                    buttons[i][j].setStatus(status);
+                }
+            }
+        }
+    }
+
+    private ArrayList<Button> getNeighbors(int[] index) {
+        ArrayList<Button> list = new ArrayList<>();
+
+        for ( int i = 0; i < 3; i++ ) {
+            for (int j = 0; j < 3; j++) {
+
+
+                if( (i == 0 && j == 0) || (i == 0 && j == 2) || (i == 2 && j == 0) || (i == 2 && j == 2)) continue;
+                if(i == j && i == 1) continue;
+
+                int x = i + index[0] - 1;
+                int y = j + index[1] - 1;
+                if(!(x < 0 || x >= size || y < 0 || y >= size)) {
+                    if(!buttons[x][y].getChecked()) list.add(buttons[x][y]);
+                }
+            }
+        }
+
+        return list;
+
+    }
 
     private int[] indexOf2D(Button toSearch) {
         for (int i = 0; i < size; i++) {
@@ -212,13 +281,13 @@ public class CampoFiorito extends AbstractCampoFiorito {
 
      **/
     private void recursiveExpansion(Button bt, boolean expandible) {
-        Integer number = getNumberOfNearBombs(bt);
+        int numberOfNearBombs = getNumberOfNearBombs(bt);
 
         int[] index = indexOf2D(bt);
 
         if( expandible ) bt.setChecked(true);
 
-        if(number == 0 && expandible) {
+        if(numberOfNearBombs == 0 && expandible) {
             bt.showItsRealNature();
 
 
@@ -247,8 +316,7 @@ public class CampoFiorito extends AbstractCampoFiorito {
             }
 
         } else {
-            if( number > 0) bt.setSafeText(number.toString());
-
+            if(numberOfNearBombs > 0) bt.setText(Integer.toString(numberOfNearBombs));
         }
 
 
@@ -262,7 +330,15 @@ public class CampoFiorito extends AbstractCampoFiorito {
         }
     }
 
-    private void setDialogOpened(boolean isLoosed) {
+    private void loose() {
+        setButtonsStatus(false);
+        openDialog(true);
+    }
+
+    private void openDialog(boolean isLoosed) {
+
+        header.getClock().stopClock();
+
         dialog.setDialog(true, isLoosed);
 
         dialogOpened = isLoosed;
@@ -272,5 +348,16 @@ public class CampoFiorito extends AbstractCampoFiorito {
         for(Button[] arr : buttons)
             for(Button e : arr)
                 e.setDisabled(status);
+    }
+
+    /**
+     * Debug utility
+     */
+    private void openBoard() {
+        for(int i = 0; i < size; i++) {
+            for(int j = 0; j < size; j++) {
+                buttons[i][j].showItsRealNature();
+            }
+        }
     }
 }

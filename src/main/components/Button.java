@@ -6,8 +6,8 @@ import java.awt.*;
 
 public class Button extends JButton {
 
-    public static Color emptyColor = new Color(138, 138, 138);
-    public static Color bombColor = new Color(255, 0, 21);
+    public static final Color emptyColor = new Color(138, 138, 138);
+    public static final Color bombColor = new Color(255, 0, 21);
 
     private final Color evenColor =  new Color(170, 215, 81);
     private final Color oddColor = new Color(162, 209, 73);
@@ -24,15 +24,11 @@ public class Button extends JButton {
     private boolean checked;
 
     private boolean isDisabled = false;
+    private boolean isShowingItsRealNature = false;
+
 
     public Button(boolean even){
 
-        
-        
-
-        status = (Math.random() * 100) < 90 ? (byte) 0 : (byte) 1;
-
-        
         checked = false;
 
         flagIcon = new ImageIcon(new ImageIcon(this.getClass().getResource("../res/flag.png")).getImage()
@@ -51,25 +47,32 @@ public class Button extends JButton {
 
     }
 
-    public int showItsRealNature() {
+    public void showItsRealNature() {
 
         setIcon(null);
         setText(null);
 
         if(status == 0) setBackground(emptyColor);
         else setBackground(bombColor);
-
-        return status;
+        isShowingItsRealNature = true;
     }
 
+    public boolean getShowingStatus() {
+        return isShowingItsRealNature;
+    }
 
-    public void setSafeText(String text) {
-        setText(null);
+    @Override
+    public void setText(String text) {
+
+        super.setText(null);
         setIcon(null);
 
         setBackground(emptyColor);
-        setText(text);
+        super.setText(text);
     }
+
+    public void setStatus(byte status) { this.status = status; }
+
     public byte getStatus() {
         return status;
     }
@@ -86,11 +89,11 @@ public class Button extends JButton {
         if(status) {
             setIcon(flagIcon);
             tempText = getText();
-            setText(null);
+            super.setText(null);
         }
         else {
             setIcon(null);
-            setText(tempText);
+            super.setText(tempText);
             tempText = null;
         }
     }

@@ -9,7 +9,8 @@ public class DialogContainer extends JPanel {
 
     private Color bgColor = new Color(0, 0, 0, 125);
 
-    public DoneGame label;
+    private DoneGame label;
+    private Dialog dialog;
 
     public DialogContainer(int windowSize) {
 
@@ -22,24 +23,32 @@ public class DialogContainer extends JPanel {
         setBackground(bgColor);
         setVisible(false);
 
+        dialog = new Dialog();
+
+
         label = new DoneGame();
 
-        add(label);
+        dialog.add(label);
+        add(dialog);
     }
 
     public void setDialog(boolean isOpen, boolean isLoosed) {
         setVisible(isOpen);
 
-        System.out.println("Called");
         label.setText(null);
         label.setText(isLoosed ? "Hai perso" : "Hai perso");
-        label.setBackground(new Color(1, 255 ,1));
+
     }
 
     @Override
     public void paintComponent(Graphics g) {
-        g.setColor( getBackground() );
+
+        g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
         super.paintComponent(g);
+    }
+
+    public DoneGame getDoneGame() {
+        return label;
     }
 }

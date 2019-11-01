@@ -4,8 +4,7 @@ import main.interfaces.Callback;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 public class ExitButton extends JButton {
 

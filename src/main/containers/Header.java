@@ -1,13 +1,12 @@
 package main.containers;
 
+import main.components.Clock;
 import main.components.FlagCounter;
 import main.interfaces.Callback;
 
-
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 
 public class Header extends JPanel {
 
@@ -18,27 +17,26 @@ public class Header extends JPanel {
     private Callback callback;
     private Point clickLocation;
 
-    public FlagCounter fCounter;
+    private FlagCounter fCounter;
+    private Clock clock;
 
     public Header(int maxWidth, int maxHeight, int sideSize, Callback callback) {
 
         this.callback = callback;
 
         setLayout(new FlowLayout(FlowLayout.CENTER));
-
         setBorder(BorderFactory.createEmptyBorder());
-
-
         setBounds(0, 0, maxWidth, maxHeight);
+
+
         fCounter = new FlagCounter();
+        clock = new Clock();
 
         add(fCounter);
-        
+        add(clock);
+
         setBackground(HEADER_BACKGROUND);
-
         addMouseListener(mouseListener);
-
-
 
         sw.execute();
     }
@@ -57,7 +55,8 @@ public class Header extends JPanel {
 
     };
 
-    SwingWorker<Object, Object> sw = new SwingWorker<Object, Object>() {
+    private SwingWorker<Object, Object> sw = new SwingWorker<Object, Object>() {
+
         @Override
         protected Object doInBackground() throws Exception {
             while (true) {
@@ -70,6 +69,14 @@ public class Header extends JPanel {
                 Thread.sleep(1000/40);
             }
         }
+
     };
 
+    public FlagCounter getFCounter() {
+        return fCounter;
+    }
+
+    public Clock getClock() {
+        return clock;
+    }
 }

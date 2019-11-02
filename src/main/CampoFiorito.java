@@ -12,21 +12,40 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-public class CampoFiorito extends AbstractCampoFiorito {
+public class CampoFiorito extends JFrame {
 
+    // Containers
     private JLayeredPane container;
     private Header header;
     private Content content;
     private ExitButton exit;
     private DialogContainer dialog;
 
-    private Button[][] buttons = new Button[size][size];
+    /**
+     * Bi-dimensional array that store the instances of {@link Button}
+     */
+    private Button[][] buttons = new Button[Game.size][Game.size];
 
+    /**
+     * If the board is generated
+     * @see #generateBoard(int[] index) 
+     */
     private boolean boardGenerated;
+
+    /**
+     * If the dialog is opened
+     * @see #openDialog(boolean) 
+     */
     private boolean dialogOpened;
 
+    /**
+     * Instance of {@link AudioController}
+     */
     private AudioController audioController;
 
+    /**
+     * Handle mouse inputs
+     */
     private MouseAdapter mouseListenerContent = new MouseAdapter () {
 
         private Color lastBackground;
@@ -96,6 +115,10 @@ public class CampoFiorito extends AbstractCampoFiorito {
         SwingUtilities.invokeLater(CampoFiorito::new);
     }
 
+    /**
+     * Init game.
+     * <p>Init window.</p>
+     */
     public CampoFiorito() {
         super("Campo fiorito");
 
@@ -103,7 +126,7 @@ public class CampoFiorito extends AbstractCampoFiorito {
 
         setUndecorated(true);
 
-        setBounds(20, 20, MAX_WINDOW_SIZE, MAX_WINDOW_SIZE);
+        setBounds(20, 20, Game.MAX_WINDOW_SIZE, Game.MAX_WINDOW_SIZE);
 
         setResizable(false);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -113,19 +136,19 @@ public class CampoFiorito extends AbstractCampoFiorito {
         container = new JLayeredPane();
 
 
-        header = new Header(MAX_WINDOW_SIZE, HEADER_HEIGHT, size, new Callback() {
+        header = new Header(Game.MAX_WINDOW_SIZE, Game.HEADER_HEIGHT, new Callback() {
 
             @Override
             public void moveScreen(Point locationInTheScreen, Point locationInTheFrame) {
                 setBounds(locationInTheScreen.x - locationInTheFrame.x, locationInTheScreen.y - locationInTheFrame.y,
-                        MAX_WINDOW_SIZE, MAX_WINDOW_SIZE);
+                        Game.MAX_WINDOW_SIZE, Game.MAX_WINDOW_SIZE);
             }
 
             @Override
-            public void exitFromFrame() {
-            }
+            public void exitFromFrame() {}
         });
-        content = new Content(MAX_WINDOW_SIZE, CONTENT_HEIGHT, size);
+        
+        content = new Content(Game.MAX_WINDOW_SIZE, Game.CONTENT_HEIGHT, Game.size);
 
 
         startNewGame();
@@ -141,8 +164,8 @@ public class CampoFiorito extends AbstractCampoFiorito {
                 dispose();
             }
 
-        }, 40, MAX_WINDOW_SIZE);
-        dialog = new DialogContainer(MAX_WINDOW_SIZE);
+        }, 40, Game.MAX_WINDOW_SIZE);
+        dialog = new DialogContainer(Game.MAX_WINDOW_SIZE);
 
         container.add(header, JLayeredPane.DEFAULT_LAYER);
         container.add(content, JLayeredPane.DEFAULT_LAYER);
@@ -164,8 +187,8 @@ public class CampoFiorito extends AbstractCampoFiorito {
      * @see #setButtonsStatus(boolean isEnabled)
      */
     private void startNewGame() {
-        for (int i = 0; i < size; i++) {
-            for (int k = 0; k < size; k++) {
+        for (int i = 0; i < Game.size; i++) {
+            for (int k = 0; k < Game.size; k++) {
 
                 if (buttons[i][k] != null) content.remove(buttons[i][k]);
 
@@ -194,7 +217,10 @@ public class CampoFiorito extends AbstractCampoFiorito {
 
     }
 
-
+    /**
+     * Generate a new board from the given button index
+     * @param index represent the position of the button in {@link #buttons}
+     */
     private void generateBoard(int[] index) {
 
         recGenBoardWhereClick(index, (int) (Math.random() * 10 + 5));
@@ -203,26 +229,31 @@ public class CampoFiorito extends AbstractCampoFiorito {
         boardGenerated = true;
     }
 
+    /**
+     * Recursive function that generate the board from the button that has been clicked
+     * @param index represent the position of the button in {@link #buttons}
+     * @param remaining remaining calls for branch
+     */
     private void recGenBoardWhereClick(int[] index, int remaining) {
         if(remaining == 0) return;
 
         Button bt = buttons[index[0]][index[1]];
         bt.setStatus((byte) 0);
 
-        if(Math.random() * 100 < 20 && remaining < 3) return;
-
         ArrayList<Button> listNeighbors = getNeighbors(index);
 
         for (Button neighbor : listNeighbors) {
             neighbor.setChecked(true);
-            //bt.setStatus((byte) 0);
             recGenBoardWhereClick(indexOf2D(neighbor), remaining - 1);
         }
     }
 
+    /**
+     * Randomly fill the rest of the board that has not been filled
+     */
     private void fillTheRestOfTheBoard() {
-        for(int i = 0; i < size; i++) {
-            for(int j = 0; j < size; j++) {
+        for(int i = 0; i < Game.size; i++) {
+            for(int j = 0; j < Game.size; j++) {
                 if(!buttons[i][j].getChecked()) {
                     byte status = Math.random() * 100 < 20 ? (byte) 1 : (byte) 0;
                     buttons[i][j].setStatus(status);
@@ -231,21 +262,26 @@ public class CampoFiorito extends AbstractCampoFiorito {
         }
     }
 
+    /**
+     * Get the buttons near the given index that has not already been checked
+     * @param index position in {@link #buttons}
+     * @return an {@link ArrayList} in which the buttons near it are stored
+     */
     private ArrayList<Button> getNeighbors(int[] index) {
         ArrayList<Button> list = new ArrayList<>();
 
         for ( int i = 0; i < 3; i++ ) {
             for (int j = 0; j < 3; j++) {
 
-
-                if( (i == 0 && j == 0) || (i == 0 && j == 2) || (i == 2 && j == 0) || (i == 2 && j == 2)) continue;
+                if((i == 0 && j == 0) || (i == 0 && j == 2) || (i == 2 && j == 0) || (i == 2 && j == 2)) continue;
                 if(i == j && i == 1) continue;
 
                 int x = i + index[0] - 1;
                 int y = j + index[1] - 1;
-                if(!(x < 0 || x >= size || y < 0 || y >= size)) {
-                    if(!buttons[x][y].getChecked()) list.add(buttons[x][y]);
-                }
+
+                if(!(x < 0 || x >= Game.size || y < 0 || y >= Game.size))
+                    if(!buttons[x][y].getChecked())
+                        list.add(buttons[x][y]);
             }
         }
 
@@ -253,9 +289,14 @@ public class CampoFiorito extends AbstractCampoFiorito {
 
     }
 
+    /**
+     * From the given button return the index of the in button of the array
+     * @param toSearch button that have to be searched
+     * @return array that has stored the coordinates of the button in {@link #buttons}
+     */
     private int[] indexOf2D(Button toSearch) {
-        for (int i = 0; i < size; i++) {
-            for (int k = 0; k < size; k++) {
+        for (int i = 0; i < Game.size; i++) {
+            for (int k = 0; k < Game.size; k++) {
 
                 if (buttons[i][k] == toSearch) return new int[]{i, k};
 
@@ -264,9 +305,11 @@ public class CampoFiorito extends AbstractCampoFiorito {
         return new int[]{-1, -1};
     }
 
-    private int getNumberOfNearBombs(Button bt) {
-        int[] index = indexOf2D(bt);
-
+    /**
+     * @param index position of the button in the array
+     * @return returns the number of bombs next to the given cell
+     */
+    private int getNumberOfNearBombs(int[] index) {
 
         int count = 0;
 
@@ -274,7 +317,7 @@ public class CampoFiorito extends AbstractCampoFiorito {
 
             for( int k = index[1] - 1; k < index[1] + 2; k++) {
 
-                if( k == index[1] && i == index[0] || ( i == -1 || k == -1 || k == size || i == size ) ) continue;
+                if( k == index[1] && i == index[0] || ( i == -1 || k == -1 || k == Game.size || i == Game.size ) ) continue;
 
 
                 if(buttons[i][k].getStatus() == 1) count++;
@@ -285,26 +328,20 @@ public class CampoFiorito extends AbstractCampoFiorito {
     }
 
     /**
-                Le O sono le celle dove esegui l`espansione
-                Le * sono celle in cui non si espande ma posso comunque scrivere
-
-                |  -  |  -  |  -  |
-                |  *  |  O  |  *  |
-                |  -  |  -  |  -  |
-                |  O  |  §  |  O  |
-                |  -  |  -  |  -  |
-                |  *  |  O  |  *  |
-                |  -  |  -  |  -  |
-
-     **/
+     * Recursive function that call his self on near buttons and show the number of near bombs
+     * @param bt actual button
+     * @param expandible true to continue expanding false to just show the number of near bombs
+     */
     private void recursiveExpansion(Button bt, boolean expandible) {
-        int numberOfNearBombs = getNumberOfNearBombs(bt);
 
         int[] index = indexOf2D(bt);
 
-        if( expandible ) bt.setChecked(true);
+        int numberOfNearBombs = getNumberOfNearBombs(index);
 
-        if(numberOfNearBombs == 0 && expandible) {
+
+        if (expandible) bt.setChecked(true);
+
+        if (numberOfNearBombs == 0 && expandible) {
             bt.showItsRealNature();
 
 
@@ -313,7 +350,7 @@ public class CampoFiorito extends AbstractCampoFiorito {
                 for( int k = index[1] - 1; k < index[1] + 2; k++) {
 
 
-                    if( k == index[1] && i == index[0] || ( i == -1 || k == -1 || k == size || i == size ) || buttons[i][k].getChecked()) continue;
+                    if( k == index[1] && i == index[0] || ( i == -1 || k == -1 || k == Game.size || i == Game.size ) || buttons[i][k].getChecked()) continue;
 
                     if(
                             (i == index[0] - 1 && k == index[1] - 1)
@@ -339,9 +376,12 @@ public class CampoFiorito extends AbstractCampoFiorito {
 
     }
 
+    /**
+     * Call on every {@link Button} the function {@link Button#setChecked(boolean isChecked)}
+     */
     private void cleanCheckedButtons() {
-        for( int i = 0; i < size; i++ ) {
-            for( int k = 0; k < size; k++ ) {
+        for(int i = 0; i < Game.size; i++ ) {
+            for(int k = 0; k < Game.size; k++ ) {
                 buttons[i][k].setChecked(false);
             }
         }
@@ -376,8 +416,8 @@ public class CampoFiorito extends AbstractCampoFiorito {
      * <p>Call {@link Button#showItsRealNature()} on every button in order to show if the are bomb or not</p>
      */
     private void openBoard() {
-        for(int i = 0; i < size; i++) {
-            for(int j = 0; j < size; j++) {
+        for(int i = 0; i < Game.size; i++) {
+            for(int j = 0; j < Game.size; j++) {
                 buttons[i][j].showItsRealNature();
             }
         }

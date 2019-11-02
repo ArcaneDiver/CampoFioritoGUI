@@ -8,13 +8,25 @@ import java.awt.event.*;
 
 public class ExitButton extends JButton {
 
+    /**
+     * Represents the icon that the button will display
+     * @see ImageIcon
+     */
     private ImageIcon icon;
 
-    Callback cb;
+    /**
+     * Callback used for call the function {@link JFrame#dispose()}
+     */
+    private Callback cb;
 
-    public ExitButton(Callback cb, int s, int windowSize) {
+    /**
+     * @param cb callback instance
+     * @param buttonSize size
+     * @param windowSize size of the window used for calculate the position of the button in the screen
+     */
+    public ExitButton(Callback cb, int buttonSize, int windowSize) {
 
-        icon = new ImageIcon( new ImageIcon( this.getClass().getResource("../res/XIcon.png") ).getImage().getScaledInstance( s, s, Image.SCALE_SMOOTH ) );
+        icon = new ImageIcon( new ImageIcon( this.getClass().getResource("../res/XIcon.png") ).getImage().getScaledInstance( buttonSize, buttonSize, Image.SCALE_SMOOTH ) );
 
         this.cb = cb;
 
@@ -28,11 +40,14 @@ public class ExitButton extends JButton {
         setBorder(BorderFactory.createEmptyBorder());
 
         setOpaque(true);
-        setBounds(windowSize - s, 0, s, s);
+        setBounds(windowSize - buttonSize, 0, buttonSize, buttonSize);
 
-        setSize(s, s);
     }
 
+    /**
+     * Handle click and dispose the window
+     * @see MouseAdapter
+     */
     private MouseAdapter mouseListener = new MouseAdapter() {
         @Override
         public void mouseClicked(MouseEvent e) {

@@ -7,11 +7,23 @@ import java.awt.*;
 
 public class DialogContainer extends JPanel {
 
+    /**
+     * Represents the background of this container
+     * @see Color
+     */
     private Color bgColor = new Color(0, 0, 0, 125);
 
+    /**
+     * Stores {@link DoneGame} instance
+     */
     private DoneGame label;
-    private Dialog dialog;
 
+    /**
+     * Remove border
+     * <p>Set {@link GridBagLayout}</p>
+     * <p>Set background</p>
+     * @param windowSize size of dialog
+     */
     public DialogContainer(int windowSize) {
 
         setBorder(BorderFactory.createEmptyBorder());
@@ -28,7 +40,11 @@ public class DialogContainer extends JPanel {
         add(label);
     }
 
-
+    /**
+     * Show the dialog that display if you won or not
+     * @param isOpen if you have to open or close the dialog
+     * @param isLoosed if you have won or lose the game
+     */
     public void setDialog(boolean isOpen, boolean isLoosed) {
         setVisible(isOpen);
 
@@ -37,6 +53,9 @@ public class DialogContainer extends JPanel {
 
     }
 
+    /**
+     * Set transparent background
+     */
     @Override
     public void paintComponent(Graphics g) {
 
@@ -45,6 +64,9 @@ public class DialogContainer extends JPanel {
         super.paintComponent(g);
     }
 
+    /**
+     * @return {@link DoneGame}
+     */
     public DoneGame getDoneGame() {
         return label;
     }

@@ -1,17 +1,20 @@
 package main;
 
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.UnsupportedAudioFileException;
 import java.applet.Applet;
 import java.applet.AudioClip;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 public class AudioController {
+
+    /**
+     * Map that stores all {@link AudioClip} in a key-value system
+     */
     private Map<String, AudioClip> audioStorage;
 
+    /**
+     * Store all audio clip instances
+     */
     public AudioController() {
         audioStorage = new HashMap<>();
 
@@ -20,9 +23,14 @@ public class AudioController {
 
     }
 
-
+    /**
+     * Reproduce the audioClip
+     * @param audio name of the clip
+     */
     public void play(String audio) {
-        audioStorage.get(audio).stop();
-        audioStorage.get(audio).play();
+        if(audioStorage.containsKey(audio)) {
+            audioStorage.get(audio).stop();
+            audioStorage.get(audio).play();
+        }
     }
 }

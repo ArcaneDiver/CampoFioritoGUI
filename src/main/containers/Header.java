@@ -10,23 +10,57 @@ import java.awt.event.*;
 
 public class Header extends JPanel {
 
+    /**
+     * Represents the background of this container
+     * @see Color
+     */
     private Color HEADER_BACKGROUND = new Color(74, 117, 44);
 
+    /**
+     * Stores if the mouse is onClick on this container
+     */
     private boolean dragged = false;
 
+    /**
+     * Stores {@link Callback} used to follow the mouse while his clicking on this container
+     *
+     * @see #mouseFollower
+     */
     private Callback callback;
+
+    /**
+     * Stores the location in the screen of the mouse when he`s clicking on this container
+     *
+     * @see Point
+     */
     private Point clickLocation;
 
+    /**
+     * Stores instance of {@link FlagCounter}
+     * @see #getFCounter()
+     */
     private FlagCounter fCounter;
+
+    /**
+     * Stores instance of {@link Clock}
+     * @see #getClock()
+     */
     private Clock clock;
 
-    public Header(int maxWidth, int maxHeight, int sideSize, Callback callback) {
+    /**
+     * Set font style
+     * <p>Remove border</p>
+     * @param width width of container
+     * @param height height of container
+     * @param callback callback
+     */
+    public Header(int width, int height, Callback callback) {
 
         this.callback = callback;
 
         setLayout(new FlowLayout(FlowLayout.CENTER));
         setBorder(BorderFactory.createEmptyBorder());
-        setBounds(0, 0, maxWidth, maxHeight);
+        setBounds(0, 0, width, height);
 
 
         fCounter = new FlagCounter();
@@ -38,38 +72,45 @@ public class Header extends JPanel {
         setBackground(HEADER_BACKGROUND);
         addMouseListener(mouseListener);
 
-        sw.execute();
+        mouseFollower.execute();
     }
 
     /**
      * Stores if this component his clicked and the relative position of the mouse
+     *
+     * @see #mouseFollower
      */
-    private MouseAdapter mouseListener = new MouseAdapter () {
+    private MouseAdapter mouseListener = new MouseAdapter() {
 
         public void mousePressed(MouseEvent e) {
             dragged = true;
             clickLocation = new Point(e.getX(), e.getY());
         }
 
-        public void mouseReleased (MouseEvent e) {
+        public void mouseReleased(MouseEvent e) {
             dragged = false;
             clickLocation = null;
         }
 
     };
 
-    private SwingWorker<Object, Object> sw = new SwingWorker<Object, Object>() {
+    /**
+     * Thread used to move the Frame in order to follow the mouse
+     *
+     * @see SwingWorker
+     */
+    private SwingWorker<Object, Object> mouseFollower = new SwingWorker<Object, Object>() {
 
         @Override
         protected Object doInBackground() throws Exception {
             while (true) {
 
-                if(dragged) {
+                if (dragged) {
                     Point location = MouseInfo.getPointerInfo().getLocation();
 
                     callback.moveScreen(location, clickLocation);
                 }
-                Thread.sleep(1000/40);
+                Thread.sleep(1000 / 40);
             }
         }
 

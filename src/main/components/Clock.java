@@ -5,12 +5,18 @@ import java.awt.*;
 
 public class Clock extends JLabel {
 
+    /**
+     * Store the instance that represent the icon of clock
+     */
     private ImageIcon clockIcon;
 
+    /**
+     * Thread used to increment the text every second
+     */
     private SwingWorker<Object, Object> clock;
 
     /**
-     * Init clockIcon object
+     * Init {@link #clockIcon} object
      * <p>Display the icon and also default text</p>
      * <p>Change the font color, size and format</p>
      */
@@ -28,6 +34,7 @@ public class Clock extends JLabel {
 
     /**
      * Create a new thread that display the time that has passed from the start of the game and start it
+     * @see #clock
      * @see SwingWorker
      */
     public void startClock() {
@@ -38,9 +45,9 @@ public class Clock extends JLabel {
                 int counter = 0;
                 while(true) {
 
-                    counter++;
 
                     setText(Integer.toString(counter));
+                    counter++;
 
                     Thread.sleep(1000);
                 }
@@ -52,6 +59,7 @@ public class Clock extends JLabel {
 
     /**
      * Stop the clock and dismiss the thread
+     * @see #clock
      * @see SwingWorker
      */
     public void stopClock() {
@@ -59,9 +67,9 @@ public class Clock extends JLabel {
     }
 
     /**
-     * Override the method {@link JLabel#setText(String)}
+     * Override the method {@link JLabel#setText(String text)}
      * <p> Method used for assign text keeping icons </p>
-     * @param text
+     * @param text string to be displayed
      */
     @Override
     public void setText(String text) {

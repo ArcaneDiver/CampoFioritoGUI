@@ -14,7 +14,7 @@ import java.util.ArrayList;
 
 public class CampoFiorito extends AbstractCampoFiorito {
 
-    private JLayeredPane container = new JLayeredPane();
+    private JLayeredPane container;
     private Header header;
     private Content content;
     private ExitButton exit;
@@ -26,94 +26,6 @@ public class CampoFiorito extends AbstractCampoFiorito {
     private boolean dialogOpened;
 
     private AudioController audioController;
-
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(CampoFiorito::new);
-    }
-
-    public CampoFiorito() {
-        super("Campo fiorito");
-
-        audioController = new AudioController();
-
-        setUndecorated(true);
-
-        setBounds(20, 20, MAX_WINDOW_SIZE, MAX_WINDOW_SIZE);
-
-        setResizable(false);
-        setDefaultCloseOperation(EXIT_ON_CLOSE);
-
-        setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
-
-
-        header = new Header(MAX_WINDOW_SIZE, HEADER_HEIGHT, size, new Callback() {
-
-            @Override
-            public void moveScreen(Point locationInTheScreen, Point locationInTheFrame) {
-                setBounds(locationInTheScreen.x - locationInTheFrame.x, locationInTheScreen.y - locationInTheFrame.y,
-                        MAX_WINDOW_SIZE, MAX_WINDOW_SIZE);
-            }
-
-            @Override
-            public void exitFromFrame() {
-            }
-        });
-
-        content = new Content(MAX_WINDOW_SIZE, CONTENT_HEIGHT, size);
-
-
-        startNewGame();
-
-
-        exit = new ExitButton(new Callback() {
-            @Override
-            public void moveScreen(Point locationInTheScreen, Point locationInTheFrame) {
-            }
-
-            @Override
-            public void exitFromFrame() {
-                dispose();
-            }
-
-        }, 40, MAX_WINDOW_SIZE);
-
-        dialog = new DialogContainer(MAX_WINDOW_SIZE);
-
-        container.add(header, JLayeredPane.DEFAULT_LAYER);
-        container.add(content, JLayeredPane.DEFAULT_LAYER);
-        container.add(exit, JLayeredPane.MODAL_LAYER);
-        container.add(dialog, JLayeredPane.MODAL_LAYER);
-
-        add(container);
-        setVisible(true);
-
-    }
-
-
-    private void startNewGame() {
-        for (int i = 0; i < size; i++) {
-            for (int k = 0; k < size; k++) {
-
-                if (buttons[i][k] != null) content.remove(buttons[i][k]);
-
-                Clock clock = header.getClock();
-                clock.stopClock();
-                clock.startClock();
-
-
-                boolean even = ((k + 1) % 2 == 0 && (i % 2 == 0)) || ((k + 1) % 2 != 0 && (i % 2 != 0));
-
-                buttons[i][k] = new Button(even);
-                buttons[i][k].addMouseListener(mouseListenerContent);
-
-                dialogOpened = false;
-                boardGenerated = false;
-
-                content.add(buttons[i][k]);
-
-            }
-        }
-    }
 
     private MouseAdapter mouseListenerContent = new MouseAdapter () {
 
@@ -151,7 +63,10 @@ public class CampoFiorito extends AbstractCampoFiorito {
                 } else {
                     audioController.play("bomb");
                     btClicked.showItsRealNature();
-                    loose();
+
+                    setButtonsStatus(false);
+                    openDialog(true);
+
                 }
             }
 
@@ -175,8 +90,110 @@ public class CampoFiorito extends AbstractCampoFiorito {
             if( lastBackground.brighter().getRGB() == btClicked.getBackground().getRGB() ) btClicked.setBackground(lastBackground);
         }
 
-
     };
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(CampoFiorito::new);
+    }
+
+    public CampoFiorito() {
+        super("Campo fiorito");
+
+        audioController = new AudioController();
+
+        setUndecorated(true);
+
+        setBounds(20, 20, MAX_WINDOW_SIZE, MAX_WINDOW_SIZE);
+
+        setResizable(false);
+        setDefaultCloseOperation(EXIT_ON_CLOSE);
+
+        setLayout(new BoxLayout(getContentPane(), BoxLayout.PAGE_AXIS));
+
+        container = new JLayeredPane();
+
+
+        header = new Header(MAX_WINDOW_SIZE, HEADER_HEIGHT, size, new Callback() {
+
+            @Override
+            public void moveScreen(Point locationInTheScreen, Point locationInTheFrame) {
+                setBounds(locationInTheScreen.x - locationInTheFrame.x, locationInTheScreen.y - locationInTheFrame.y,
+                        MAX_WINDOW_SIZE, MAX_WINDOW_SIZE);
+            }
+
+            @Override
+            public void exitFromFrame() {
+            }
+        });
+        content = new Content(MAX_WINDOW_SIZE, CONTENT_HEIGHT, size);
+
+
+        startNewGame();
+
+
+        exit = new ExitButton(new Callback() {
+            @Override
+            public void moveScreen(Point locationInTheScreen, Point locationInTheFrame) {
+            }
+
+            @Override
+            public void exitFromFrame() {
+                dispose();
+            }
+
+        }, 40, MAX_WINDOW_SIZE);
+        dialog = new DialogContainer(MAX_WINDOW_SIZE);
+
+        container.add(header, JLayeredPane.DEFAULT_LAYER);
+        container.add(content, JLayeredPane.DEFAULT_LAYER);
+        container.add(exit, JLayeredPane.MODAL_LAYER);
+        container.add(dialog, JLayeredPane.MODAL_LAYER);
+
+        add(container);
+        setVisible(true);
+
+    }
+
+    /**
+     * Start new game
+     * <p>Remove old {@link Button} if they exists</p>
+     * <p>Restart a new {@link Clock}</p>
+     * <p>Set to 0 the number of flags of {@link FlagCounter}</p>
+     * <p>Create new {@link Button}</p>
+     *
+     * @see #setButtonsStatus(boolean isEnabled)
+     */
+    private void startNewGame() {
+        for (int i = 0; i < size; i++) {
+            for (int k = 0; k < size; k++) {
+
+                if (buttons[i][k] != null) content.remove(buttons[i][k]);
+
+                Clock clock = header.getClock();
+                clock.stopClock();
+                clock.startClock();
+
+                FlagCounter flagCounter = header.getFCounter();
+                flagCounter.setNumberOfFlags(0);
+
+
+                boolean even = ((k + 1) % 2 == 0 && (i % 2 == 0)) || ((k + 1) % 2 != 0 && (i % 2 != 0));
+
+                buttons[i][k] = new Button(even);
+                buttons[i][k].addMouseListener(mouseListenerContent);
+
+                dialogOpened = false;
+                boardGenerated = false;
+
+
+                content.add(buttons[i][k]);
+            }
+        }
+
+        setButtonsStatus(true);
+
+    }
+
 
     private void generateBoard(int[] index) {
 
@@ -330,11 +347,11 @@ public class CampoFiorito extends AbstractCampoFiorito {
         }
     }
 
-    private void loose() {
-        setButtonsStatus(false);
-        openDialog(true);
-    }
 
+    /**
+     * Open the dialog and specify if the play has won or loosed
+     * @param isLoosed true if loose false if win
+     */
     private void openDialog(boolean isLoosed) {
 
         header.getClock().stopClock();
@@ -344,14 +361,19 @@ public class CampoFiorito extends AbstractCampoFiorito {
         dialogOpened = isLoosed;
     }
 
-    private void setButtonsStatus(boolean status) {
+    /**
+     * Used for enable of disable every button in {@link #buttons}
+     * @param isEnabled true to enable and false to disable
+     */
+    private void setButtonsStatus(boolean isEnabled) {
         for(Button[] arr : buttons)
             for(Button e : arr)
-                e.setDisabled(status);
+                e.setEnabled(isEnabled);
     }
 
     /**
      * Debug utility
+     * <p>Call {@link Button#showItsRealNature()} on every button in order to show if the are bomb or not</p>
      */
     private void openBoard() {
         for(int i = 0; i < size; i++) {

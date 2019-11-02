@@ -41,6 +41,9 @@ public class Header extends JPanel {
         sw.execute();
     }
 
+    /**
+     * Stores if this component his clicked and the relative position of the mouse
+     */
     private MouseAdapter mouseListener = new MouseAdapter () {
 
         public void mousePressed(MouseEvent e) {
@@ -72,10 +75,16 @@ public class Header extends JPanel {
 
     };
 
+    /**
+     * @return the instance of {@link FlagCounter}
+     */
     public FlagCounter getFCounter() {
         return fCounter;
     }
 
+    /**
+     * @return the instance of {@link Clock}
+     */
     public Clock getClock() {
         return clock;
     }

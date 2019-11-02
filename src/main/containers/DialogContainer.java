@@ -23,14 +23,11 @@ public class DialogContainer extends JPanel {
         setBackground(bgColor);
         setVisible(false);
 
-        dialog = new Dialog();
-
-
         label = new DoneGame();
 
-        dialog.add(label);
-        add(dialog);
+        add(label);
     }
+
 
     public void setDialog(boolean isOpen, boolean isLoosed) {
         setVisible(isOpen);

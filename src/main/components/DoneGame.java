@@ -5,9 +5,10 @@ import java.awt.*;
 
 public class DoneGame extends JLabel {
 
+    /**
+     * Set font size and color
+     */
     public DoneGame() {
-
-        super("Hai vinto", SwingConstants.CENTER);
 
         setFont( new Font(Font.SANS_SERIF, Font.BOLD, 30) );
 

@@ -44,6 +44,11 @@ public class CampoFiorito extends JFrame {
     private AudioController audioController;
 
     /**
+     * The number of bomb in the board
+     */
+    private int numberOfBombs;
+
+    /**
      * Handle mouse inputs
      */
     private MouseAdapter mouseListenerContent = new MouseAdapter () {
@@ -72,20 +77,22 @@ public class CampoFiorito extends JFrame {
                         generateBoard(indexOf2D(btClicked));
                         //openBoard();
                     }
-
+                    if(btClicked.getShowingStatus()) return;
                     audioController.play("empty");
 
                     recursiveExpansion(btClicked, true);
                     cleanCheckedButtons();
 
+                    checkWin();
 
                 } else {
                     audioController.play("bomb");
                     btClicked.showItsRealNature();
 
-                    setButtonsStatus(false);
+                    /*
+                    enableButtons(false);
                     openDialog(true);
-
+                    */
                 }
             }
 
@@ -146,6 +153,9 @@ public class CampoFiorito extends JFrame {
 
             @Override
             public void exitFromFrame() {}
+
+            @Override
+            public void retryGame() {}
         });
         
         content = new Content(Game.MAX_WINDOW_SIZE, Game.CONTENT_HEIGHT, Game.size);
@@ -156,16 +166,31 @@ public class CampoFiorito extends JFrame {
 
         exit = new ExitButton(new Callback() {
             @Override
-            public void moveScreen(Point locationInTheScreen, Point locationInTheFrame) {
-            }
+            public void moveScreen(Point locationInTheScreen, Point locationInTheFrame) {}
 
             @Override
             public void exitFromFrame() {
                 dispose();
             }
 
+            @Override
+            public void retryGame() {}
+
         }, 40, Game.MAX_WINDOW_SIZE);
-        dialog = new DialogContainer(Game.MAX_WINDOW_SIZE);
+
+
+        dialog = new DialogContainer(Game.MAX_WINDOW_SIZE, new Callback() {
+            @Override
+            public void moveScreen(Point locationInTheScreen, Point locationInTheFrame) {}
+
+            @Override
+            public void exitFromFrame() {}
+
+            @Override
+            public void retryGame() {
+                startNewGame();
+            }
+        });
 
         container.add(header, JLayeredPane.DEFAULT_LAYER);
         container.add(content, JLayeredPane.DEFAULT_LAYER);
@@ -184,7 +209,7 @@ public class CampoFiorito extends JFrame {
      * <p>Set to 0 the number of flags of {@link FlagCounter}</p>
      * <p>Create new {@link Button}</p>
      *
-     * @see #setButtonsStatus(boolean isEnabled)
+     * @see #enableButtons(boolean isEnabled)
      */
     private void startNewGame() {
         for (int i = 0; i < Game.size; i++) {
@@ -207,13 +232,13 @@ public class CampoFiorito extends JFrame {
 
                 dialogOpened = false;
                 boardGenerated = false;
-
+                numberOfBombs = 0;
 
                 content.add(buttons[i][k]);
             }
         }
 
-        setButtonsStatus(true);
+        enableButtons(true);
 
     }
 
@@ -238,6 +263,7 @@ public class CampoFiorito extends JFrame {
         if(remaining == 0) return;
 
         Button bt = buttons[index[0]][index[1]];
+
         bt.setStatus((byte) 0);
 
         ArrayList<Button> listNeighbors = getNeighbors(index);
@@ -256,6 +282,10 @@ public class CampoFiorito extends JFrame {
             for(int j = 0; j < Game.size; j++) {
                 if(!buttons[i][j].getChecked()) {
                     byte status = Math.random() * 100 < 20 ? (byte) 1 : (byte) 0;
+
+                    if(status == 1)
+                        numberOfBombs++;
+
                     buttons[i][j].setStatus(status);
                 }
             }
@@ -370,7 +400,10 @@ public class CampoFiorito extends JFrame {
             }
 
         } else {
-            if(numberOfNearBombs > 0) bt.setText(Integer.toString(numberOfNearBombs));
+            if(numberOfNearBombs > 0) {
+                bt.showItsRealNature();
+                bt.setText(Integer.toString(numberOfNearBombs));
+            }
         }
 
 
@@ -380,35 +413,53 @@ public class CampoFiorito extends JFrame {
      * Call on every {@link Button} the function {@link Button#setChecked(boolean isChecked)}
      */
     private void cleanCheckedButtons() {
-        for(int i = 0; i < Game.size; i++ ) {
-            for(int k = 0; k < Game.size; k++ ) {
+        for(int i = 0; i < Game.size; i++ )
+            for(int k = 0; k < Game.size; k++ )
                 buttons[i][k].setChecked(false);
-            }
-        }
+
+
     }
 
+    /**
+     * Control if the game is won
+     */
+    private void checkWin() {
+        int numberOfEmptyCellsShowed = 0;
+        int numberOfEmptyCells = Game.BOARD_SIZE - numberOfBombs;
+
+        for(int i = 0; i < Game.size; i++) {
+            for(int j = 0; j < Game.size; j++) {
+                if(buttons[i][j].getShowingStatus() && buttons[i][j].getStatus() == 0) numberOfEmptyCellsShowed++;
+            }
+        }
+        System.out.println(" showed: " + numberOfEmptyCellsShowed + " total: " + numberOfEmptyCells);
+        if(numberOfEmptyCellsShowed == numberOfEmptyCells) {
+            enableButtons(false);
+            openDialog(false);
+        }
+    }
 
     /**
      * Open the dialog and specify if the play has won or loosed
      * @param isLoosed true if loose false if win
      */
     private void openDialog(boolean isLoosed) {
+        Clock clock = header.getClock();
+        clock.stopClock();
 
-        header.getClock().stopClock();
+        dialog.setDialog(isLoosed, clock.getCounter());
 
-        dialog.setDialog(true, isLoosed);
-
-        dialogOpened = isLoosed;
+        dialogOpened = true;
     }
 
     /**
      * Used for enable of disable every button in {@link #buttons}
      * @param isEnabled true to enable and false to disable
      */
-    private void setButtonsStatus(boolean isEnabled) {
-        for(Button[] arr : buttons)
-            for(Button e : arr)
-                e.setEnabled(isEnabled);
+    private void enableButtons(boolean isEnabled) {
+        for(int i = 0; i < Game.size; i++)
+            for(int j = 0; j < Game.size; j++)
+                buttons[i][j].setEnabled(isEnabled);
     }
 
     /**

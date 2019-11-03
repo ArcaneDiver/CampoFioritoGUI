@@ -1,9 +1,13 @@
 package main.containers;
 
 import main.components.DoneGame;
+import main.components.RetryButton;
+import main.interfaces.Callback;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class DialogContainer extends JPanel {
 
@@ -22,9 +26,9 @@ public class DialogContainer extends JPanel {
      * Remove border
      * <p>Set {@link GridBagLayout}</p>
      * <p>Set background</p>
-     * @param windowSize size of dialog
+     * @param windowSize size of the window
      */
-    public DialogContainer(int windowSize) {
+    public DialogContainer(int windowSize, Callback callback) {
 
         setBorder(BorderFactory.createEmptyBorder());
         setLayout(new GridBagLayout());
@@ -37,19 +41,35 @@ public class DialogContainer extends JPanel {
 
         label = new DoneGame();
 
-        add(label);
+        RetryButton retry = new RetryButton();
+        retry.addMouseListener(new MouseAdapter() {
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                setVisible(false);
+                callback.retryGame();
+            }
+        });
+
+        GridBagConstraints gL = new GridBagConstraints();
+        gL.gridx = 2;
+
+        GridBagConstraints gR = new GridBagConstraints();
+        gR.gridx = 2;
+
+        add(label, gL);
+        add(retry, gR);
     }
 
     /**
      * Show the dialog that display if you won or not
-     * @param isOpen if you have to open or close the dialog
      * @param isLoosed if you have won or lose the game
+     * @param score number of second in which the player complete the game
      */
-    public void setDialog(boolean isOpen, boolean isLoosed) {
-        setVisible(isOpen);
-
+    public void setDialog(boolean isLoosed, int score) {
+        setVisible(true);
         label.setText(null);
-        label.setText(isLoosed ? "Hai perso" : "Hai perso");
+        label.setText(isLoosed ? "Hai perso" : "Hai vinto in " + score + " secondi");
 
     }
 
@@ -64,10 +84,5 @@ public class DialogContainer extends JPanel {
         super.paintComponent(g);
     }
 
-    /**
-     * @return {@link DoneGame}
-     */
-    public DoneGame getDoneGame() {
-        return label;
-    }
+
 }

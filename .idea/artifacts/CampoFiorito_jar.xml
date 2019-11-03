@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="CampoFiorito:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/CampoFiorito_jar</output-path>
+    <root id="archive" name="CampoFiorito.jar">
+      <element id="module-output" name="CampoFiorito" />
+    </root>
+  </artifact>
+</component>

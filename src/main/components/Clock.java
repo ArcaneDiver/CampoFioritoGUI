@@ -7,13 +7,20 @@ public class Clock extends JLabel {
 
     /**
      * Store the instance that represent the icon of clock
+     * @see ImageIcon
      */
     private ImageIcon clockIcon;
 
     /**
      * Thread used to increment the text every second
+     * @see SwingWorker
      */
     private SwingWorker<Object, Object> clock;
+
+    /**
+     * Stores the number of seconds that has passed from the start of the game
+     */
+    private int counter;
 
     /**
      * Init {@link #clockIcon} object
@@ -42,12 +49,12 @@ public class Clock extends JLabel {
             @Override
             protected Object doInBackground() throws Exception {
 
-                int counter = 0;
+                counter = -1;
+
                 while(true) {
 
-
-                    setText(Integer.toString(counter));
                     counter++;
+                    setText(Integer.toString(counter));
 
                     Thread.sleep(1000);
                 }
@@ -78,5 +85,12 @@ public class Clock extends JLabel {
 
         setIcon(clockIcon);
         super.setText(text);
+    }
+
+    /**
+     * @return {@link #counter}
+     */
+    public int getCounter() {
+        return counter;
     }
 }

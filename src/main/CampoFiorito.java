@@ -4,6 +4,7 @@ package main;
 import main.components.*;
 import main.components.Button;
 import main.containers.*;
+import main.audio.*;
 import main.interfaces.Callback;
 
 import javax.swing.*;
@@ -73,11 +74,16 @@ public class CampoFiorito extends JFrame {
             } else if ( !btClicked.isFlagged() ){
 
                 if (btClicked.getStatus() == 0) {
+                    if(btClicked.getShowingStatus()) return;
+
                     if(!boardGenerated) {
                         generateBoard(indexOf2D(btClicked));
+
+                        //Insta win
                         //openBoard();
                     }
-                    if(btClicked.getShowingStatus()) return;
+
+
                     audioController.play("empty");
 
                     recursiveExpansion(btClicked, true);
@@ -89,10 +95,10 @@ public class CampoFiorito extends JFrame {
                     audioController.play("bomb");
                     btClicked.showItsRealNature();
 
-                    /*
+
                     enableButtons(false);
                     openDialog(true);
-                    */
+
                 }
             }
 
@@ -432,7 +438,7 @@ public class CampoFiorito extends JFrame {
                 if(buttons[i][j].getShowingStatus() && buttons[i][j].getStatus() == 0) numberOfEmptyCellsShowed++;
             }
         }
-        System.out.println(" showed: " + numberOfEmptyCellsShowed + " total: " + numberOfEmptyCells);
+
         if(numberOfEmptyCellsShowed == numberOfEmptyCells) {
             enableButtons(false);
             openDialog(false);
@@ -463,7 +469,7 @@ public class CampoFiorito extends JFrame {
     }
 
     /**
-     * Debug utility
+     * Provide insta win
      * <p>Call {@link Button#showItsRealNature()} on every button in order to show if the are bomb or not</p>
      */
     private void openBoard() {

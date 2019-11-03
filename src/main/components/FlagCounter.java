@@ -9,7 +9,7 @@ public class FlagCounter extends JLabel {
      * Represents the icon that the counter will display
      * @see ImageIcon
      */
-    private final ImageIcon flagIcon = new ImageIcon( this.getClass().getResource("../res/flag.png") );
+    private final ImageIcon flagIcon = new ImageIcon( this.getClass().getResource("flag.png") );
 
     /**
      * Actual number of flags

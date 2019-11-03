@@ -29,7 +29,7 @@ public class Clock extends JLabel {
      */
     public Clock() {
 
-        clockIcon = new ImageIcon(getClass().getResource("../res/clock.png"));
+        clockIcon = new ImageIcon(getClass().getResource("clock.png"));
 
         setIcon(clockIcon);
         setText(" 0");

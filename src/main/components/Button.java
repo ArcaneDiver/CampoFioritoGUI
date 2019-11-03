@@ -74,7 +74,7 @@ public class Button extends JButton {
 
         checked = false;
 
-        flagIcon = new ImageIcon( new ImageIcon(this.getClass().getResource("../res/flag.png")).getImage()
+        flagIcon = new ImageIcon( new ImageIcon(this.getClass().getResource("flag.png")).getImage()
                 .getScaledInstance(ButtonSize, ButtonSize, Image.SCALE_SMOOTH));
 
 

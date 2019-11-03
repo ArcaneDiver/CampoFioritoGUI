@@ -1,4 +1,4 @@
-package main;
+package main.audio;
 
 import java.applet.Applet;
 import java.applet.AudioClip;
@@ -18,8 +18,8 @@ public class AudioController {
     public AudioController() {
         audioStorage = new HashMap<>();
 
-        audioStorage.put("empty", Applet.newAudioClip(this.getClass().getResource("./res/empty.wav")));
-        audioStorage.put("bomb", Applet.newAudioClip(this.getClass().getResource("./res/bomb.wav")));
+        audioStorage.put("empty", Applet.newAudioClip(getClass().getResource("empty.wav")));
+        audioStorage.put("bomb", Applet.newAudioClip(getClass().getResource("bomb.wav")));
 
     }
 

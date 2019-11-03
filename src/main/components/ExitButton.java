@@ -26,7 +26,7 @@ public class ExitButton extends JButton {
      */
     public ExitButton(Callback cb, int buttonSize, int windowSize) {
 
-        icon = new ImageIcon( new ImageIcon( this.getClass().getResource("../res/XIcon.png") ).getImage().getScaledInstance( buttonSize, buttonSize, Image.SCALE_SMOOTH ) );
+        icon = new ImageIcon( new ImageIcon( this.getClass().getResource("XIcon.png") ).getImage().getScaledInstance( buttonSize, buttonSize, Image.SCALE_SMOOTH ) );
 
         this.cb = cb;
 

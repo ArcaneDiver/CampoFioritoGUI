@@ -51,9 +51,9 @@ public class DialogContainer extends JPanel {
             }
         });
 
+        // To center the two labels
         GridBagConstraints gL = new GridBagConstraints();
         gL.gridx = 2;
-
         GridBagConstraints gR = new GridBagConstraints();
         gR.gridx = 2;
 
@@ -63,13 +63,15 @@ public class DialogContainer extends JPanel {
 
     /**
      * Show the dialog that display if you won or not
-     * @param isLoosed if you have won or lose the game
+     * @param isLoosed if you have won or loose the game
      * @param score number of second in which the player complete the game
      */
     public void setDialog(boolean isLoosed, int score) {
+
         setVisible(true);
+
         label.setText(null);
-        label.setText(isLoosed ? "Hai perso" : "Hai vinto in " + score + " secondi");
+        label.setText(isLoosed ? "You loose" : "You won in " + score + " seconds");
 
     }
 
@@ -81,6 +83,7 @@ public class DialogContainer extends JPanel {
 
         g.setColor(getBackground());
         g.fillRect(0, 0, getWidth(), getHeight());
+
         super.paintComponent(g);
     }
 

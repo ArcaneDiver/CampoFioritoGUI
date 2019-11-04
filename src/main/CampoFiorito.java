@@ -126,6 +126,7 @@ public class CampoFiorito extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(CampoFiorito::new);
+
     }
 
     /**
@@ -422,12 +423,11 @@ public class CampoFiorito extends JFrame {
         for(int i = 0; i < Game.size; i++ )
             for(int k = 0; k < Game.size; k++ )
                 buttons[i][k].setChecked(false);
-
-
     }
 
     /**
-     * Control if the game is won
+     * Control if the game is won by checking
+     * if every empty cell has been showed
      */
     private void checkWin() {
         int numberOfEmptyCellsShowed = 0;
@@ -459,7 +459,7 @@ public class CampoFiorito extends JFrame {
     }
 
     /**
-     * Used for enable of disable every button in {@link #buttons}
+     * Enable of disable every button in {@link #buttons}
      * @param isEnabled true to enable and false to disable
      */
     private void enableButtons(boolean isEnabled) {
@@ -469,7 +469,7 @@ public class CampoFiorito extends JFrame {
     }
 
     /**
-     * Provide insta win
+     * Provide instantly win
      * <p>Call {@link Button#showItsRealNature()} on every button in order to show if the are bomb or not</p>
      */
     private void openBoard() {
